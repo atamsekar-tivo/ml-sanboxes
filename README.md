@@ -1,4 +1,4 @@
-# ml-sanboxes
+# ml-sandboxes
 
 # Local ML Sandbox (Jupyter + TensorFlow + Data Science)
 
