@@ -153,10 +153,10 @@ def launch():
         flash("Error: Port 8888 is already in use. Please stop any running JupyterLab or free the port before launching.", "error")
         return redirect("/")
     # Remove any existing container
-    subprocess.call(["docker", "rm", "-f", "ml-sanbox-jupyter"])
+    subprocess.call(["docker", "rm", "-f", "ml-sandbox-jupyter"])
     # Build the image
     try:
-        subprocess.check_output(["docker", "build", "-t", "ml-sanbox-jupyter-img", "."], stderr=subprocess.STDOUT)
+        subprocess.check_output(["docker", "build", "-t", "ml-sandbox-jupyter-img", "."], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         flash(f"Error building image: {e.output.decode()}", "error")
         return redirect("/")
@@ -164,12 +164,12 @@ def launch():
     try:
         subprocess.check_output([
             "docker", "run", "-d",
-            "--name", "ml-sanbox-jupyter",
+            "--name", "ml-sandbox-jupyter",
             "-p", "8888:8888",
             "-v", f"{os.getcwd()}/notebooks:/tf/notebooks",
             "--cpus", str(cpu),
             "--memory", f"{ram}G",
-            "ml-sanbox-jupyter-img"
+            "ml-sandbox-jupyter-img"
         ], stderr=subprocess.STDOUT)
         flash("Jupyter Sandbox launched successfully!", "success")
         # If timeout is set, schedule stop
@@ -178,7 +178,7 @@ def launch():
             def stop_later():
                 try:
                     time.sleep(timeout * 60)
-                    subprocess.check_output(["docker", "rm", "-f", "ml-sanbox-jupyter"], stderr=subprocess.STDOUT)
+                    subprocess.check_output(["docker", "rm", "-f", "ml-sandbox-jupyter"], stderr=subprocess.STDOUT)
                 except Exception:
                     pass
             threading.Thread(target=stop_later, daemon=True).start()
@@ -189,7 +189,7 @@ def launch():
 @app.route("/stop", methods=["POST"])
 def stop():
     try:
-        subprocess.check_output(["docker", "rm", "-f", "ml-sanbox-jupyter"], stderr=subprocess.STDOUT)
+        subprocess.check_output(["docker", "rm", "-f", "ml-sandbox-jupyter"], stderr=subprocess.STDOUT)
         flash("Sandbox stopped successfully!", "success")
     except subprocess.CalledProcessError as e:
         flash(f"Error stopping sandbox: {e.output.decode()}", "error")
