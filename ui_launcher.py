@@ -5,7 +5,9 @@ from flask import Flask, render_template, request, redirect, flash
 import logging
 
 app = Flask(__name__)
-app.secret_key = 'ml-sandbox-secret-key'
+app.secret_key = os.getenv('FLASK_SECRET_KEY', None)
+if app.secret_key is None:
+    raise RuntimeError("FLASK_SECRET_KEY environment variable is not set. Please set it before running the application.")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
