@@ -2,9 +2,14 @@ import os
 import subprocess
 import socket
 from flask import Flask, render_template_string, request, redirect, flash
+import logging
 
 app = Flask(__name__)
 app.secret_key = 'ml-sandbox-secret-key'
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("ml-sandbox-ui")
 
 TEMPLATE = """
 <!DOCTYPE html>
@@ -134,6 +139,14 @@ def is_port_in_use(port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('127.0.0.1', port)) == 0
 
+def remove_sandbox_container():
+    try:
+        subprocess.check_output(["docker", "rm", "-f", "ml-sandbox-jupyter"], stderr=subprocess.STDOUT)
+        return True, None
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error removing container: {e.output.decode()}")
+        return False, None
+
 @app.route("/", methods=["GET"])
 def index():
     status, status_class, container_details = get_status_and_details()
@@ -153,12 +166,13 @@ def launch():
         flash("Error: Port 8888 is already in use. Please stop any running JupyterLab or free the port before launching.", "error")
         return redirect("/")
     # Remove any existing container
-    subprocess.call(["docker", "rm", "-f", "ml-sandbox-jupyter"])
+    remove_sandbox_container()
     # Build the image
     try:
         subprocess.check_output(["docker", "build", "-t", "ml-sandbox-jupyter-img", "."], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        flash(f"Error building image: {e.output.decode()}", "error")
+        logger.error(f"Error building image: {e.output.decode()}")
+        flash("Error building image. Please check the logs for details.", "error")
         return redirect("/")
     # Run the container
     try:
@@ -178,21 +192,22 @@ def launch():
             def stop_later():
                 try:
                     time.sleep(timeout * 60)
-                    subprocess.check_output(["docker", "rm", "-f", "ml-sandbox-jupyter"], stderr=subprocess.STDOUT)
+                    remove_sandbox_container()
                 except Exception:
                     pass
             threading.Thread(target=stop_later, daemon=True).start()
     except subprocess.CalledProcessError as e:
-        flash(f"Error launching sandbox: {e.output.decode()}", "error")
+        logger.error(f"Error launching sandbox: {e.output.decode()}")
+        flash("Error launching sandbox. Please check the logs for details.", "error")
     return redirect("/")
 
 @app.route("/stop", methods=["POST"])
 def stop():
-    try:
-        subprocess.check_output(["docker", "rm", "-f", "ml-sandbox-jupyter"], stderr=subprocess.STDOUT)
+    success, _ = remove_sandbox_container()
+    if success:
         flash("Sandbox stopped successfully!", "success")
-    except subprocess.CalledProcessError as e:
-        flash(f"Error stopping sandbox: {e.output.decode()}", "error")
+    else:
+        flash("Error stopping sandbox. Please check the logs for details.", "error")
     return redirect("/")
 
 if __name__ == "__main__":
