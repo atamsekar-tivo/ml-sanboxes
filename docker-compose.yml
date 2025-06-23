@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  jupyter:
+    build: .
+    # container_name: jupyter-instance-student  # Removed for random naming
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/tf/notebooks
+    user: "${UID:-1000}:${GID:-1000}"
+    restart: "no"
