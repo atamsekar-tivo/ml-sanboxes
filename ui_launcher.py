@@ -5,9 +5,7 @@ from flask import Flask, render_template, request, redirect, flash
 import logging
 
 app = Flask(__name__)
-app.secret_key = os.getenv('FLASK_SECRET_KEY', None)
-if app.secret_key is None:
-    raise RuntimeError("FLASK_SECRET_KEY environment variable is not set. Please set it before running the application.")
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key')
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -116,4 +114,6 @@ def remove_sandbox_container():
 
 if __name__ == "__main__":
     debug_mode = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
+    if app.secret_key == 'dev-secret-key' and not debug_mode:
+        raise RuntimeError("FLASK_SECRET_KEY environment variable is not set. Please set it before running in production.")
     app.run(port=5000, debug=debug_mode)

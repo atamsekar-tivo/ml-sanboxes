@@ -33,6 +33,26 @@ This project provides a local, configurable JupyterLab sandbox for machine learn
 6. **Open JupyterLab:**
    Click the "Open JupyterLab" button in the UI, or visit [http://localhost:8888](http://localhost:8888).
 
+## Running the UI Launcher
+
+### Development (Debug Mode, uses default secret key)
+To run in development mode (debug on, default secret key):
+```sh
+export FLASK_DEBUG=1
+python ui_launcher.py
+```
+
+### Production (Debug Off, requires secret key)
+To run in production (debug off, must set a strong secret key):
+```sh
+export FLASK_SECRET_KEY='your-strong-secret-key'
+export FLASK_DEBUG=0
+python ui_launcher.py
+```
+
+- If `FLASK_DEBUG` is not set or is `0`, the app will require `FLASK_SECRET_KEY` to be set, otherwise it will not start.
+- Never use the default secret key in production.
+
 ## Configuration
 - **CPU/RAM/Timeout:** Set via the web UI before launching.
 - **Disk:** The `./notebooks` folder is mounted for persistent storage.
