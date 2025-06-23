@@ -7,7 +7,7 @@ MEM=${2:-3.5G}
 mkdir -p notebooks
 
 docker run --rm -it \
-  --name jupyter-instance-student \
+  --name ml-sandbox-jupyter \
   -p 8888:8888 \
   -v "$PWD/notebooks":/tf/notebooks \
   --cpus="$CPU" --memory="$MEM" \
