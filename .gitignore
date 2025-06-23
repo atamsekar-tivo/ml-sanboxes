@@ -1,0 +1,6 @@
+# Ignore all files in the notebooks directory
+notebooks/
+
+# But keep the directory itself
+docs/
+!.gitignore
