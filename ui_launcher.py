@@ -114,7 +114,7 @@ TEMPLATE = """
 
 def get_status_and_details():
     try:
-        out = subprocess.check_output(["docker", "ps", "-a", "--filter", "name=ml-sanbox-jupyter", "--format", "{{.Status}}|{{.Names}}|{{.ID}}"], encoding="utf-8")
+        out = subprocess.check_output(["docker", "ps", "-a", "--filter", "name=ml-sandbox-jupyter", "--format", "{{.Status}}|{{.Names}}|{{.ID}}"], encoding="utf-8")
         if not out.strip():
             return 'No container', 'status-unknown', ''
         line = out.strip().splitlines()[0]
