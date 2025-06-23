@@ -211,4 +211,5 @@ def stop():
     return redirect("/")
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    debug_mode = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
+    app.run(port=5000, debug=debug_mode)
