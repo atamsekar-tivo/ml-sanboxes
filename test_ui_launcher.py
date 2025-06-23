@@ -10,7 +10,8 @@ def client():
 def test_index_route(client):
     response = client.get('/')
     assert response.status_code == 200
-    assert b'Jupyter' in response.data or b'Sandbox' in response.data
+    assert b'Jupyter' in response.data
+    assert b'Sandbox' in response.data
 
 def test_launch_route_get_not_allowed(client):
     response = client.get('/launch')
