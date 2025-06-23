@@ -5,8 +5,9 @@ from flask import Flask, render_template_string, request, redirect, flash
 import logging
 
 app = Flask(__name__)
-app.secret_key = 'ml-sandbox-secret-key'
-
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'default-development-key')
+if app.secret_key == 'default-development-key':
+    logger.warning("Using default secret key. Set FLASK_SECRET_KEY environment variable for production.")
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ml-sandbox-ui")
