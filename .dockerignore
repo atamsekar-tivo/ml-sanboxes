@@ -1,0 +1,12 @@
+notebooks
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+build/
+dist/
+.eggs/
+*.egg-info/
+.DS_Store
